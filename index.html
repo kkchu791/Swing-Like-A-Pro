@@ -1,70 +1,296 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Baseball Swing Analysis</title>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
-  <style>
-    .video-container {
-      display: flex;
-      justify-content: space-around;
-    }
-    video {
-      width: 45%;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swing Like a Pro</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            padding-top: 60px;
+            padding-bottom: 60px;
+        }
+
+        .container {
+            margin-left: 50px;
+            margin-right: 50px;
+        }
+
+        #media-upload {
+            padding-top: 30px;
+        }
+
+        #video-output {
+            padding-top: 30px;
+            padding-bottom: 65px;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #f5f5f5;
+            line-height: 60px;
+        }
+
+        .video-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .video-container video {
+            width: 45%;
+        }
+
+        .nav-item {
+            color: #e63946;
+        }
+
+        .spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #results {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f1faee;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #results h2 {
+            color: #e63946;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        #results p {
+            color: #1d3557;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #e63946;
+            border-radius: 50%;
+            animation: confetti 1.5s ease-out infinite;
+        }
+
+        @keyframes confetti {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(100px, 100px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>Baseball Swing Analysis</h1>
-  <input type="file" id="video1" accept="video/*">
-  <input type="file" id="video2" accept="video/*">
-  <button onclick="analyzeSwings()">Analyze Swings</button>
-  <br><br>
-  <div id="results"></div>
-  <div class="video-container">
-    <video id="analyzed-video1" controls></video>
-    <video id="analyzed-video2" controls></video>
-  </div>
+    <header>
+        <nav class="navbar navbar-expand-lg fixed-top" style="background-color: #f1faee;">
+            <div class="container">
+                <a class="navbar-brand mx-auto" href="#" style="color: #e63946;">Swing Like a Pro</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#about-team" style="color: #e63946;">About the Team</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#about-project" style="color: #e63946;">About the Project</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#tech-stack" style="color: #e63946;">Our Tech Stack</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
 
-  <script>
-    async function analyzeSwings() {
-      const video1 = document.getElementById('video1').files[0];
-      const video2 = document.getElementById('video2').files[0];
-      const resultsDiv = document.getElementById('results');
+    <main class="container">
+        <section id="media-upload">
+            <h1>Do you have what it takes to swing like a pro?</h1>
+            <input type="file" id="video1" accept="video/*">
+            <input type="file" id="video2" accept="video/*">
+            <button onclick="analyzeSwings()">Analyze Swings</button>
+        </section>
 
-      const formData = new FormData();
-      formData.append('video1', video1);
-      formData.append('video2', video2);
+        <section id="video-output">
+            <h4>Results!</h4>
+            <button id="play-button" onclick="playVideos()" disabled>
+                <span id="button-text">Play Videos</span>
+                <span id="button-spinner" class="spinner"></span>
+            </button>
+            <div class="video-container" style="display: none;">
+                <video id="analyzed-video1" controls></video>
+                <video id="analyzed-video2" controls></video>
+            </div>
+            <div id="results"></div>
+        </section>
 
-      try {
-        const response = await fetch('/analyze', {
-          method: 'POST',
-          body: formData
-        });
+        <section id="about-project">
+            <h2>About the Project</h2>
+            <p>Our project aims to revolutionize the way people interact with technology. We have developed a cutting-edge solution that leverages AI and machine learning to provide personalized experiences.</p>
+        </section>
 
-        const data = await response.json();
+        <section id="tech-stack">
+            <h2>Tech Stack</h2>
+            <ul>
+                <li>Front-end: HTML, CSS, Bootstrap</li>
+                <li>Back-end: Python, Flask</li>
+                <li>AI/ML: MediaPipe, Kindo.ai</li>
+            </ul>
+        </section>
 
-        resultsDiv.innerHTML = `
-          <p>Left Arm Angle Similarity: ${data.left_arm_angle_similarity.toFixed(2)}%</p>
-          <p>Hip Angle Similarity: ${data.hip_angle_similarity.toFixed(2)}%</p>
-          <p>Shoulder Angle Similarity: ${data.shoulder_angle_similarity.toFixed(2)}%</p>
-        `;
+        <section id="about-team">
+            <h2>About the Team</h2>
+            <p>We are a team of passionate developers and innovators participating in this hackathon!</p>
+            <ul>
+                <li>Nikki Benitez - Full Stack Developer</li>
+                <li>Ming Chen - Product Design</li>
+                <li>Kirk Chu - Full Stack Developer</li>
+                <li>Sathya Peri - Full Stack Developer</li>
+                <li>Daniel - Project Manager</li>
+            </ul>
+        </section>
+    </main>
 
-        // Display the analyzed videos
-        const analyzedVideo1 = document.getElementById('analyzed-video1');
-        const analyzedVideo2 = document.getElementById('analyzed-video2');
-        analyzedVideo1.src = './static/analyzed_video1.mp4';
-        analyzedVideo2.src = './static/analyzed_video2.mp4';
+    <footer class="footer" style="background-color: #f1faee;">
+        <div class="container">
+            <span>© 2024 Cerebral Beach Hacks</span>
+        </div>
+    </footer>
 
-        // Play the analyzed videos
-        analyzedVideo1.play();
-        analyzedVideo2.play();
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    }
-  </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        let similarityData = null;
+
+        async function analyzeSwings() {
+            const video1 = document.getElementById('video1').files[0];
+            const video2 = document.getElementById('video2').files[0];
+            const playButton = document.getElementById('play-button');
+            const buttonText = document.getElementById('button-text');
+            const buttonSpinner = document.getElementById('button-spinner');
+
+            playButton.disabled = true;
+            buttonText.style.display = 'none';
+            buttonSpinner.style.display = 'inline-block';
+
+            const formData = new FormData();
+            formData.append('video1', video1);
+            formData.append('video2', video2);
+
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                similarityData = data;
+
+                const analyzedVideo1 = document.getElementById('analyzed-video1');
+                const analyzedVideo2 = document.getElementById('analyzed-video2');
+                analyzedVideo1.src = `static/analyzed_video1.mp4`;
+                analyzedVideo2.src = `static/analyzed_video2.mp4`;
+
+                playButton.disabled = false;
+                buttonText.style.display = 'inline';
+                buttonSpinner.style.display = 'none';
+            } catch (error) {
+                console.error('Error:', error);
+                playButton.disabled = false;
+                buttonText.style.display = 'inline';
+                buttonSpinner.style.display = 'none';
+            }
+        }
+
+        function playVideos() {
+            const videoContainer = document.querySelector('.video-container');
+            videoContainer.style.display = 'flex';
+
+            const analyzedVideo1 = document.getElementById('analyzed-video1');
+            const analyzedVideo2 = document.getElementById('analyzed-video2');
+            analyzedVideo1.play();
+            analyzedVideo2.play();
+
+            displayResults();
+            createConfetti();
+        }
+
+        function displayResults() {
+            const resultsDiv = document.getElementById('results');
+            const leftArmAngleSimilarity = similarityData.left_arm_angle_similarity;
+            const hipAngleSimilarity = similarityData.hip_angle_similarity;
+            const shoulderAngleSimilarity = similarityData.shoulder_angle_similarity;
+
+            const averageScore = (leftArmAngleSimilarity + hipAngleSimilarity + shoulderAngleSimilarity) / 3;
+
+            resultsDiv.innerHTML = `
+                <h2>🎉 Congratulations! 🎉</h2>
+                <p>You've achieved an incredible milestone in your baseball journey!</p>
+                <p>Your swing analysis results are:</p>
+                <ul>
+                    <li>Left Arm Angle Similarity: ${leftArmAngleSimilarity.toFixed(2)}%</li>
+                    <li>Hip Angle Similarity: ${hipAngleSimilarity.toFixed(2)}%</li>
+                    <li>Shoulder Angle Similarity: ${shoulderAngleSimilarity.toFixed(2)}%</li>
+                </ul>
+                <p>Your <strong>average similarity score</strong> is:</p>
+                <h3 style="font-size: 36px; font-weight: bold; color: #e63946;">${averageScore.toFixed(2)}%</h3>
+                <p>You're well on your way to swinging like a pro! Keep up the fantastic work!</p>
+                <p>Your dedication and hard work are truly inspiring. You should be proud of yourself!</p>
+                <p>Remember, every swing brings you closer to your dreams. Keep pushing forward!</p>
+            `;
+            resultsDiv.style.display = 'block';
+        }
+
+        function createConfetti() {
+            const confettiContainer = document.createElement('div');
+            confettiContainer.classList.add('confetti-container');
+            document.body.appendChild(confettiContainer);
+
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.animationDelay = Math.random() * 1.5 + 's';
+                confettiContainer.appendChild(confetti);
+            }
+
+            setTimeout(() => {
+                confettiContainer.remove();
+            }, 3000);
+        }
+    </script>
 </body>
 </html>

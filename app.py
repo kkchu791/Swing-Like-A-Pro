@@ -63,18 +63,12 @@ def analyze():
     response_data = {
         'left_arm_angle_similarity': similarity_percentage,
         'hip_angle_similarity': hip_similarity_percentage,
-        'shoulder_angle_similarity': shoulder_similarity_percentage
+        'shoulder_angle_similarity': shoulder_similarity_percentage,
+        'analyzed_video1': '/static/analyzed_video1.mp4',
+        'analyzed_video2': '/static/analyzed_video2.mp4'
     }
 
     return jsonify(response_data)
-
-@app.route('/analyzed_video1')
-def serve_analyzed_video1():
-    return send_file('static/analyzed_video1.mp4', mimetype='video/mp4')
-
-@app.route('/analyzed_video2')
-def serve_analyzed_video2():
-    return send_file('static/analyzed_video2.mp4', mimetype='video/mp4')
 
 def analyze_baseball_swing(video_path, output_path):
     cap = cv2.VideoCapture(video_path)
