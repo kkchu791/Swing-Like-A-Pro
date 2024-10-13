@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Baseball Swing Analysis</title>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+  <style>
+    .video-container {
+      display: flex;
+      justify-content: space-around;
+    }
+    video {
+      width: 45%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Baseball Swing Analysis</h1>
+  <input type="file" id="video1" accept="video/*">
+  <input type="file" id="video2" accept="video/*">
+  <button onclick="analyzeSwings()">Analyze Swings</button>
+  <br><br>
+  <div id="results"></div>
+  <div class="video-container">
+    <video id="processed-video1" controls></video>
+    <video id="processed-video2" controls></video>
+  </div>
+
+  <script>
+    async function analyzeSwings() {
+      const video1 = document.getElementById('video1').files[0];
+      const video2 = document.getElementById('video2').files[0];
+      const resultsDiv = document.getElementById('results');
+
+      const formData = new FormData();
+      formData.append('video1', video1);
+      formData.append('video2', video2);
+
+      try {
+        const response = await fetch('/analyze', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+
+        resultsDiv.innerHTML = `
+          <p>Left Arm Angle Similarity: ${data.left_arm_angle_similarity.toFixed(2)}%</p>
+          <p>Hip Angle Similarity: ${data.hip_angle_similarity.toFixed(2)}%</p>
+          <p>Shoulder Angle Similarity: ${data.shoulder_angle_similarity.toFixed(2)}%</p>
+        `;
+
+        // Display the processed videos
+        const processedVideo1 = document.getElementById('processed-video1');
+        const processedVideo2 = document.getElementById('processed-video2');
+        processedVideo1.src = 'output1.mp4';
+        processedVideo2.src = 'output2.mp4';
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+  </script>
+</body>
+</html>
