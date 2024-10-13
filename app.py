@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_file
 import cv2
 import mediapipe as mp
 import numpy as np
+import tempfile
 import os
 
 app = Flask(__name__)
@@ -11,22 +12,24 @@ mp_pose = mp.solutions.pose
 
 @app.route('/')
 def index():
-    return send_file('video.html')
+    return send_file('index.html')
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
     video1 = request.files['video1']
     video2 = request.files['video2']
 
-    # Save the uploaded video files
-    video1_path = 'test.mp4.mov'
-    video2_path = 'test2.mp4'
-    video1.save(video1_path)
-    video2.save(video2_path)
+    # Save the uploaded video files to temporary files
+    temp_video1 = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4')
+    temp_video2 = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4')
+    video1.save(temp_video1.name)
+    video2.save(temp_video2.name)
 
-    # Analyze the baseball swings
-    angles1, hip_angles1, shoulder_angles1 = analyze_baseball_swing(video1_path, 'output1.mp4')
-    angles2, hip_angles2, shoulder_angles2 = analyze_baseball_swing(video2_path, 'output2.mp4')
+    # Analyze the baseball swings and save the analyzed videos
+    analyzed_video1 = 'static/analyzed_video1.mp4'
+    analyzed_video2 = 'static/analyzed_video2.mp4'
+    angles1, hip_angles1, shoulder_angles1 = analyze_baseball_swing(temp_video1.name, analyzed_video1)
+    angles2, hip_angles2, shoulder_angles2 = analyze_baseball_swing(temp_video2.name, analyzed_video2)
 
     # Calculate similarity percentages
     min_length = min(len(angles1), len(angles2))
@@ -64,6 +67,14 @@ def analyze():
     }
 
     return jsonify(response_data)
+
+@app.route('/analyzed_video1')
+def serve_analyzed_video1():
+    return send_file('static/analyzed_video1.mp4', mimetype='video/mp4')
+
+@app.route('/analyzed_video2')
+def serve_analyzed_video2():
+    return send_file('static/analyzed_video2.mp4', mimetype='video/mp4')
 
 def analyze_baseball_swing(video_path, output_path):
     cap = cv2.VideoCapture(video_path)
@@ -141,7 +152,7 @@ def analyze_baseball_swing(video_path, output_path):
             # Render detections
             mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
 
-            # Write the processed frame to the output video
+            # Write the analyzed frame to the output video
             out.write(image)
 
     cap.release()
@@ -163,4 +174,6 @@ def calculate_angle(a, b, c):
     return angle
 
 if __name__ == '__main__':
+    if not os.path.exists('static'):
+        os.makedirs('static')
     app.run()

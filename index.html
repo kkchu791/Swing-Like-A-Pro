@@ -24,8 +24,8 @@
   <br><br>
   <div id="results"></div>
   <div class="video-container">
-    <video id="processed-video1" controls></video>
-    <video id="processed-video2" controls></video>
+    <video id="analyzed-video1" controls></video>
+    <video id="analyzed-video2" controls></video>
   </div>
 
   <script>
@@ -52,11 +52,15 @@
           <p>Shoulder Angle Similarity: ${data.shoulder_angle_similarity.toFixed(2)}%</p>
         `;
 
-        // Display the processed videos
-        const processedVideo1 = document.getElementById('processed-video1');
-        const processedVideo2 = document.getElementById('processed-video2');
-        processedVideo1.src = 'output1.mp4';
-        processedVideo2.src = 'output2.mp4';
+        // Display the analyzed videos
+        const analyzedVideo1 = document.getElementById('analyzed-video1');
+        const analyzedVideo2 = document.getElementById('analyzed-video2');
+        analyzedVideo1.src = './static/analyzed_video1.mp4';
+        analyzedVideo2.src = './static/analyzed_video2.mp4';
+
+        // Play the analyzed videos
+        analyzedVideo1.play();
+        analyzedVideo2.play();
       } catch (error) {
         console.error('Error:', error);
       }
