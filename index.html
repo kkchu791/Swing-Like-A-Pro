@@ -24,6 +24,11 @@
             padding-top: 30px;
         }
 
+        #image-headers {
+          display: flex;
+
+        }
+
         #video-output {
             padding-top: 30px;
             padding-bottom: 65px;
@@ -136,6 +141,39 @@
     </header>
 
     <main class="container">
+
+        <section id="image-headers">
+          <img src="static/header_image_1.jpg" alt="Banner Image" width="600" height="300" title="Welcome Banner" class="header-image">
+          <img src="static/header_image_2.jpg" alt="Banner Image" width="600" height="300" title="Welcome Banner" class="header-image">
+        </section>
+
+
+        <section id="about-project">
+          <h2>About the Project</h2>
+          <p>Our project aims to revolutionize the way families interact with technology at sporting events, providing a new, interactive experience that brings more fun and engagement to their favorite sports. We want to inspire fans, both kids and adults, by allowing them to not only watch their sports idols but also can compare their swing skills with them. Our cutting-edge solution leverages AI and machine learning to do the comparisons, offering metrics that help them improve and fuel their passion for the sports they love to play.</p>
+      </section>
+
+      <section id="tech-stack">
+          <h2>Tech Stack</h2>
+          <ul>
+              <li>Front-end: HTML, CSS, Bootstrap</li>
+              <li>Back-end: Python, Flask</li>
+              <li>AI/ML: MediaPipe, Kindo.ai</li>
+          </ul>
+      </section>
+
+    <section id="about-team">
+        <h2>About the Team</h2>
+        <p>We are a team of passionate developers and innovators participating in this hackathon!</p>
+        <ul>
+            <li>Nikki Benitez - Full Stack Developer</li>
+            <li>Ming Chen - Product Design</li>
+            <li>Kirk Chu - Full Stack Developer</li>
+            <li>Sathya Peri - Full Stack Developer</li>
+            <li>Daniel - Project Manager</li>
+        </ul>
+    </section>
+
         <section id="media-upload">
             <h1>Do you have what it takes to swing like a pro?</h1>
             <input type="file" id="video1" accept="video/*">
@@ -156,31 +194,7 @@
             <div id="results"></div>
         </section>
 
-        <section id="about-project">
-            <h2>About the Project</h2>
-            <p>Our project aims to revolutionize the way people interact with technology. We have developed a cutting-edge solution that leverages AI and machine learning to provide personalized experiences.</p>
-        </section>
-
-        <section id="tech-stack">
-            <h2>Tech Stack</h2>
-            <ul>
-                <li>Front-end: HTML, CSS, Bootstrap</li>
-                <li>Back-end: Python, Flask</li>
-                <li>AI/ML: MediaPipe, Kindo.ai</li>
-            </ul>
-        </section>
-
-        <section id="about-team">
-            <h2>About the Team</h2>
-            <p>We are a team of passionate developers and innovators participating in this hackathon!</p>
-            <ul>
-                <li>Nikki Benitez - Full Stack Developer</li>
-                <li>Ming Chen - Product Design</li>
-                <li>Kirk Chu - Full Stack Developer</li>
-                <li>Sathya Peri - Full Stack Developer</li>
-                <li>Daniel - Project Manager</li>
-            </ul>
-        </section>
+  
     </main>
 
     <footer class="footer" style="background-color: #f1faee;">
